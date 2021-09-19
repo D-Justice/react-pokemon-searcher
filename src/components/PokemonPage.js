@@ -5,16 +5,46 @@ import Search from './Search'
 import { Container } from 'semantic-ui-react'
 
 class PokemonPage extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      pokeData: []
+    }
+  }
+
+  componentDidMount() {
+    this.pokeFetch()
+  }
+  search = (input) => {
+
+    this.setState(prevState =>{
+      return{
+        pokeData: prevState.pokeData.filter(pokemon => pokemon.name.startsWith(input))
+      }
+      
+    })
+    
+    if(!input) {this.pokeFetch()}
+    
+  }
+
+  pokeFetch = () => {
+    fetch(`http://localhost:3000/pokemon`)
+    .then(response => response.json())
+    .then(data => this.setState({pokeData: data}))
+  }
+
   render() {
+    
     return (
       <Container>
         <h1>Pokemon Searcher</h1>
         <br />
-        <PokemonForm />
+        <PokemonForm pokeFetch={this.pokeFetch}/>
         <br />
-        <Search />
+        <Search searchFunction={this.search}/>
         <br />
-        <PokemonCollection />
+        <PokemonCollection pokeData={this.state.pokeData}/>
       </Container>
     )
   }
